@@ -87,7 +87,7 @@ def check_auth(uid, pwd):
     if userid is None or password is None:
         read_search_api_key()
     
-    print(userid, password, uid, pwd)
+    # print(userid, password, uid, pwd)
 
     if uid == userid and pwd == password:
         return True
@@ -100,20 +100,23 @@ def hello():
 
     return 'Hello World!'
 
-@app.route('/google_search', methods=['POST, GET'])
+@app.route('/google_search', methods=['POST', 'GET'])
 @authenticate
 def google_search():
     q = request.args.get('q')
+    print(q)
     url = f'https://www.google.com/search?q={q}'
     text = read_webpage(url)
-    return jsonify(
+    return json.dumps(
         {
             'q': q,
             'content': text
-        }
+        },
+        ensure_ascii=False,
+        indent=2
     )
 
-@app.route('/google_search_api', methods=['POST, GET'])
+@app.route('/google_search_api', methods=['POST', 'GET'])
 @authenticate
 def google_search_api():
     global google_search_api_key, cx, google_map_api_key
@@ -122,20 +125,27 @@ def google_search_api():
         read_search_api_key()
         
     q = request.args.get('q')
+    print(q)
     url = "https://www.googleapis.com/customsearch/v1"
     content = ""
-    for i in range(0, 0):
+    for i in range(0, 1):
         response = requests.get(url, params={"key": google_search_api_key, "cx": cx, "q": q, "start": i * 10 + 1, "num": 10}).json()
+        # print(json.dumps(response, ensure_ascii=False, indent=2))
         for link in response["items"]:
+            # link에 "namu.wiki"가 포함되어 있으면 skip
+            if "namu.wiki" in link['link']:
+                continue
             print(link['link'])
             text = read_webpage(link['link'])
             content += text + "\n" + "-" * 100 + "\n"
     
-    return jsonify(
+    return json.dumps(
         {
             'q': q,
             'content': content
-        }
+        },
+        ensure_ascii=False,
+        indent=2
     )
 
 @app.route('/google_map', methods=['POST', 'GET'])
@@ -148,9 +158,9 @@ def get_places():
     
     activity = request.args.get('activity')
     city = request.args.get('city')
-    print(activity, city)
     # print(google_map_api_key)
-    text_query = f"{activity} in {city}"
+    text_query = f"{city} {activity}"
+    print(text_query)
     places_resp = requests.get(
         f"https://maps.googleapis.com/maps/api/place/textsearch/json",
         params={

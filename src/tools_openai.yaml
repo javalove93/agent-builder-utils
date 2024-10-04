@@ -1,0 +1,53 @@
+openapi: 3.0.2
+info:
+  title: google_map_search
+  description: This API provides accommodation information based on city and type.
+  version: 1.0.0
+servers:
+  - url: http://34.64.181.15:8991
+paths:
+  /google_map:
+    get:
+      summary: Get accommodations based on city, area and type
+      parameters:
+        - in: query
+          name: city
+          schema:
+            type: string
+            description: City or area to search for accommodations
+        - in: query
+          name: activity
+          schema:
+            type: string
+            description: accommodation type to search for accommodations
+      responses:
+        '200':
+          description: Places found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the accommodation
+                    address:
+                      type: string
+                      description: Address of the accommodation
+                    rating:
+                      type: number
+                      format: float
+                      description: Rating of the accommodation
+        '400':
+          description: Invalid input or error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+
