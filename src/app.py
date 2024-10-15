@@ -173,6 +173,18 @@ def get_places():
     
     # print(places_resp.json())
 
+    result = []
+    for place in places_resp.json()['results']:
+        print(place['name'], place['formatted_address'], place.get('rating', 0))
+        result.append({
+            'name': place['name'],
+            'address': place['formatted_address'],
+            'rating': place.get('rating', 0),
+        })
+
+    # result를 json 형태로 반환. ensure_ascii=False는 한글이 깨지지 않게 하기 위함
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
     # places_resp.json() 결과
         # {'html_attributions': [],
         # 'next_page_token': 'AdCG2DNV3W67AW1UPTbNhafP2RvI5CeZ1wWLua8LMUVNAeY52uJfzWr6lQ9V-vapwzQD9-FPJlBMw8IIW-n3BO8tonTKgy3G-FMKFMl7jpx2vID-yfE1LeUF4YI3kJzPofdAQW1MfWaYYwA3smzG7U_rMFtBkLyROZpruqTiEtRSzUByk38VtTszZLa2ApEMGpySnizJrYJwPlPwavsIx6uqwURhc0ZRGdieSCC9pzDmkR5w5T7CI-i8rs4OCMBfcj5masKFcs5rXrRc_kkFYh7cwQ78-jXXZR2WKsTtGtemy5fl9UTUb3YIlbph9neBHm5edV_ZbjG9IaJB0UzlYlnUBvzbzHpfbVQMPRG3ieFmBBk8m4e1WIGGgEQREflJ98KjCyNSlPMEMe9mCkU',
@@ -198,17 +210,5 @@ def get_places():
         # 'types': ['lodging', 'point_of_interest', 'establishment'],
         # 'user_ratings_total': 4640},
     
-    result = []
-    for place in places_resp.json()['results']:
-        print(place['name'], place['formatted_address'], place.get('rating', 0))
-        result.append({
-            'name': place['name'],
-            'address': place['formatted_address'],
-            'rating': place.get('rating', 0),
-        })
-
-    # result를 json 형태로 반환. ensure_ascii=False는 한글이 깨지지 않게 하기 위함
-    return json.dumps(result, ensure_ascii=False, indent=2)
-
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8990)
